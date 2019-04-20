@@ -1,13 +1,16 @@
-use cgmath;
+use crate::prelude::*;
 use cgmath::Deg;
 use cgmath::Matrix;
 use cgmath::SquareMatrix;
 use glium::Frame;
 use glium::Surface;
-use prelude::*;
 
 pub fn transform_normals(total_transform: &Trans4d) -> Trans3d {
-    let without_projective_part = Trans3d::from_cols(total_transform[0].truncate(), total_transform[1].truncate(), total_transform[2].truncate());
+    let without_projective_part = Trans3d::from_cols(
+        total_transform[0].truncate(),
+        total_transform[1].truncate(),
+        total_transform[2].truncate(),
+    );
     without_projective_part.invert().unwrap().transpose()
 }
 

@@ -1,7 +1,3 @@
-extern crate cgmath;
-#[macro_use]
-extern crate glium;
-
 pub mod geometry;
 pub mod load;
 pub mod main_loop;

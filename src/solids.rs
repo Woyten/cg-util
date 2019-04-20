@@ -1,6 +1,6 @@
-use geometry::Geometry;
+use crate::geometry::Geometry;
+use crate::prelude::Coord3d;
 use glium::index::PrimitiveType;
-use prelude::Coord3d;
 
 pub fn tetrahedron() -> Geometry {
     let mut tetrahedron = Geometry::new(PrimitiveType::TrianglesList);

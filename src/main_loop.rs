@@ -1,10 +1,10 @@
-use glium::Frame;
-use glium::Surface;
 use glium::backend::glutin::Display;
 use glium::glutin::ContextBuilder;
 use glium::glutin::Event;
 use glium::glutin::EventsLoop;
 use glium::glutin::WindowBuilder;
+use glium::Frame;
+use glium::Surface;
 
 pub fn start<S: State>() {
     let window_builder = WindowBuilder::new().with_title("CG Util");

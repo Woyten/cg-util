@@ -1,12 +1,12 @@
+use crate::load::GpuObjectHandle;
+use crate::load::LoadOnGpu;
+use crate::manifold::Manifold2d;
+use crate::prelude::Coord3d;
+use crate::prelude::VertexAttribute;
 use cgmath::InnerSpace;
-use glium::VertexBuffer;
 use glium::backend::glutin::Display;
 use glium::index::PrimitiveType;
-use load::GpuObjectHandle;
-use load::LoadOnGpu;
-use manifold::Manifold2d;
-use prelude::Coord3d;
-use prelude::VertexAttribute;
+use glium::VertexBuffer;
 
 pub struct Geometry {
     pub primitive_type: PrimitiveType,
@@ -16,7 +16,7 @@ pub struct Geometry {
 impl Geometry {
     pub fn new(primitive_type: PrimitiveType) -> Geometry {
         Geometry {
-            primitive_type: primitive_type,
+            primitive_type,
             vertices: Vec::new(),
         }
     }
@@ -31,7 +31,7 @@ impl Geometry {
         geometry
     }
 
-    pub fn from_manifold<'a, M: Manifold2d<Coord = Coord3d>>(coordinates: M) -> Geometry {
+    pub fn from_manifold<M: Manifold2d<Coord = Coord3d>>(coordinates: M) -> Geometry {
         let mut surface = Geometry::new(PrimitiveType::TrianglesList);
 
         for x in 0..coordinates.width() - 1 {

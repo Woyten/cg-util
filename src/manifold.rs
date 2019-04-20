@@ -1,4 +1,4 @@
-use prelude::Coord3d;
+use crate::prelude::Coord3d;
 use std::f32::consts::PI;
 
 pub trait Manifold2d: Sized {
@@ -9,11 +9,14 @@ pub trait Manifold2d: Sized {
     fn get(&self, x: usize, y: usize) -> Self::Coord;
 
     fn by_ref(&self) -> ByRef2d<Self> {
-        ByRef2d { orig_manifold: self }
+        ByRef2d {
+            orig_manifold: self,
+        }
     }
 
     fn transformed<T, F>(self, transform: F) -> Transformed<Self, T>
-        where F: 'static + Fn(Self::Coord) -> T
+    where
+        F: 'static + Fn(Self::Coord) -> T,
     {
         Transformed {
             orig_manifold: self,
@@ -23,11 +26,12 @@ pub trait Manifold2d: Sized {
 }
 
 pub fn from_fn<T, F>(width: usize, height: usize, function: F) -> FromFn<T>
-    where F: 'static + Fn(usize, usize) -> T
+where
+    F: 'static + Fn(usize, usize) -> T,
 {
     FromFn {
-        width: width,
-        height: height,
+        width,
+        height,
         function: Box::new(function),
     }
 }
@@ -114,7 +118,13 @@ pub fn sphere(phi_grid: usize, theta_grid: usize) -> FromFn<Coord3d> {
 }
 
 pub fn torus(phi_grid: usize, theta_grid: usize, thickness: f32) -> FromFn<Coord3d> {
-    fn torus_function(u: usize, v: usize, phi_grid: f32, theta_grid: f32, thickness: f32) -> Coord3d {
+    fn torus_function(
+        u: usize,
+        v: usize,
+        phi_grid: f32,
+        theta_grid: f32,
+        thickness: f32,
+    ) -> Coord3d {
         let phi = 2.0 * PI * u as f32 / phi_grid;
         let theta = 2.0 * PI * v as f32 / theta_grid;
         let sin_phi = phi.sin();

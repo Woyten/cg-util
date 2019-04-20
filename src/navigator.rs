@@ -1,10 +1,11 @@
+use crate::prelude::*;
 use cgmath::Rad;
+use glium::glutin::dpi::LogicalPosition;
 use glium::glutin::ElementState;
 use glium::glutin::Event;
 use glium::glutin::MouseButton;
 use glium::glutin::WindowEvent;
-use prelude::Coord3d;
-use prelude::Trans4d;
+
 use std::default::Default;
 use std::f32::consts::PI;
 
@@ -22,7 +23,13 @@ pub struct Navigator {
 }
 
 impl Navigator {
-    pub fn new(initial_phi: f32, initial_theta: f32, initial_distance: f32, pixels_per_revolution: f64, pixels_per_double_distance: f64) -> Self {
+    pub fn new(
+        initial_phi: f32,
+        initial_theta: f32,
+        initial_distance: f32,
+        pixels_per_revolution: f64,
+        pixels_per_double_distance: f64,
+    ) -> Self {
         Navigator {
             phi: initial_phi,
             theta: initial_theta,
@@ -38,43 +45,37 @@ impl Navigator {
     }
 
     pub fn calculate_transform(&self) -> Trans4d {
-        let rotation = Trans4d::from_angle_x(-Rad(self.theta)) * Trans4d::from_angle_z(-Rad(self.phi));
+        let rotation =
+            Trans4d::from_angle_x(-Rad(self.theta)) * Trans4d::from_angle_z(-Rad(self.phi));
         Trans4d::from_translation(Coord3d::new(0.0, 0.0, -self.distance)) * rotation
     }
 
     pub fn handle_event(&mut self, event: Event) {
-        match event {
-            Event::WindowEvent {
-                window_id: _,
-                event,
-            } => match event {
-                WindowEvent::CursorMoved {
-                    device_id: _,
-                    position,
-                } => self.mouse_moved(position),
+        if let Event::WindowEvent { event, .. } = event {
+            match event {
+                WindowEvent::CursorMoved { position, .. } => self.mouse_moved(position),
                 WindowEvent::MouseInput {
-                    device_id: _,
                     state: ElementState::Pressed,
                     button: MouseButton::Left,
+                    ..
                 } => self.rotation_start(),
                 WindowEvent::MouseInput {
-                    device_id: _,
                     state: ElementState::Released,
                     button: MouseButton::Left,
+                    ..
                 } => self.rotation_stop(),
                 WindowEvent::MouseInput {
-                    device_id: _,
                     state: ElementState::Pressed,
                     button: MouseButton::Right,
+                    ..
                 } => self.translation_start(),
                 WindowEvent::MouseInput {
-                    device_id: _,
                     state: ElementState::Released,
                     button: MouseButton::Right,
+                    ..
                 } => self.translation_stop(),
                 _ => {}
-            },
-            _ => {}
+            }
         }
     }
 
@@ -94,16 +95,21 @@ impl Navigator {
         self.translation_start_position = None;
     }
 
-    fn mouse_moved(&mut self, new_position: (f64, f64)) {
+    fn mouse_moved(&mut self, new_position: LogicalPosition) {
+        let new_position = (new_position.x, new_position.y);
         self.mouse_position = new_position;
         if let Some(old_position) = self.rotation_start_position {
-            self.phi += 2.0 * PI * (old_position.0 - new_position.0) as f32 / self.pixels_per_revolution as f32;
-            self.theta += 2.0 * PI * (old_position.1 - new_position.1) as f32 / self.pixels_per_revolution as f32;
+            self.phi += 2.0 * PI * (old_position.0 - new_position.0) as f32
+                / self.pixels_per_revolution as f32;
+            self.theta += 2.0 * PI * (old_position.1 - new_position.1) as f32
+                / self.pixels_per_revolution as f32;
             self.theta = self.theta.min(PI).max(0.0);
             self.rotation_start_position = Some(new_position);
         }
         if let Some(old_position) = self.translation_start_position {
-            self.distance *= 2.0f32.powf((new_position.1 - old_position.1) as f32 / self.pixels_per_double_distance as f32);
+            self.distance *= 2.0f32.powf(
+                (new_position.1 - old_position.1) as f32 / self.pixels_per_double_distance as f32,
+            );
             self.translation_start_position = Some(new_position);
         }
     }

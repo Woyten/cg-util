@@ -1,6 +1,6 @@
-use glium::VertexBuffer;
+use crate::prelude::*;
 use glium::backend::glutin::Display;
-use prelude::*;
+use glium::VertexBuffer;
 
 pub trait LoadOnGpu: Sized {
     fn load(self, facade: &Display) -> GpuObjectHandle<Self>;
